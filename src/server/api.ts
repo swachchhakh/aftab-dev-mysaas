@@ -26,14 +26,16 @@ export const api = new Elysia({ prefix: "/api" })
     console.error(`[API ERROR] ${code} on ${path}:`, error);
   })
   .use(cors({
-    origin: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+    origin: true, 
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   }))
+  .mount(auth.handler)
   .get("/health", () => ({
     status: "ok",
     timestamp: new Date().toISOString(),
   }))
-  .mount(auth.handler)
   .use(purchasesRoute)
   .all("/inngest", async (ctx) => {
     return inngestHandler(ctx.request);
