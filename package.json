@@ -19,6 +19,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.4.2",
     "@elysiajs/eden": "^1.4.9",
     "@fontsource-variable/geist": "^5.2.8",
     "@neondatabase/serverless": "^1.1.0",
