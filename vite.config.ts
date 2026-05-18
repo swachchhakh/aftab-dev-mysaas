@@ -8,8 +8,8 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  ssr: {
-    external: ["elysia", "inngest"],
+  define: {
+    'process.env.BETTER_AUTH_URL': JSON.stringify(process.env.BETTER_AUTH_URL ?? 'http://localhost:3000'),
   },
   resolve: {
     tsconfigPaths: true,
