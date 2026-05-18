@@ -36,12 +36,18 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes
     },
   },
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      secure: false, // false for localhost
+    },
+  },
 
   trustedOrigins: isDev
   ? ["http://localhost:3000"]
   : [baseURL, `https://aftab-dev-mysaas.vercel.app`],
 
-  plugins: [tanstackStartCookies()],
+  plugins: [],
 });
 
 export type Auth = typeof auth;
