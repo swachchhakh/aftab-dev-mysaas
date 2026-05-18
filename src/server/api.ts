@@ -6,6 +6,7 @@ import { db, purchases, users } from "@/lib/db";
 import { purchasesRoute } from "./routes/purchases";
 import { serve } from "inngest/bun";
 import { inngest, functions } from "@/lib/jobs";
+import { cors } from "@elysiajs/cors";
 import {
   createOneTimeCheckoutSession,
   retrieveCheckoutSession,
@@ -24,6 +25,10 @@ export const api = new Elysia({ prefix: "/api" })
   .onError(({ code, error, path }) => {
     console.error(`[API ERROR] ${code} on ${path}:`, error);
   })
+  .use(cors({
+    origin: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+    credentials: true,
+  }))
   .get("/health", () => ({
     status: "ok",
     timestamp: new Date().toISOString(),

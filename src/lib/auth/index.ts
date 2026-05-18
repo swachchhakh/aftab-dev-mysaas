@@ -38,8 +38,8 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: isDev
-    ? ["http://localhost:3000"]
-    : [baseURL],
+  ? ["http://localhost:3000"]
+  : [baseURL, `https://aftab-dev-mysaas.vercel.app`],
 
   plugins: [tanstackStartCookies()],
 });
