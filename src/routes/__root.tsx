@@ -1,10 +1,25 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy, Suspense } from 'react'
 import appCss from '../styles.css?url'
 
 const queryClient = new QueryClient();
+
+const TanStackDevtools = import.meta.env.DEV
+  ? lazy(() =>
+      import('@tanstack/react-devtools').then((m) => ({
+        default: m.TanStackDevtools,
+      }))
+    )
+  : () => null;
+
+const TanStackRouterDevtoolsPanel = import.meta.env.DEV
+  ? lazy(() =>
+      import('@tanstack/react-router-devtools').then((m) => ({
+        default: m.TanStackRouterDevtoolsPanel,
+      }))
+    )
+  : () => null;
 
 export const Route = createRootRoute({
   head: () => ({
@@ -31,10 +46,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <TanStackDevtools
-          config={{ position: 'bottom-right' }}
-          plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
-        />
+        <Suspense>
+          <TanStackDevtools
+            config={{ position: 'bottom-right' }}
+            plugins={[{ name: 'Tanstack Router', render: <TanStackRouterDevtoolsPanel /> }]}
+          />
+        </Suspense>
         <Scripts />
       </body>
     </html>
