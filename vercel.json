@@ -1,13 +1,4 @@
 {
   "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "outputDirectory": "dist",
-  "functions": {
-    "dist/server/server.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/server/server.js" }
-  ]
+  "buildCommand": "bun run build"
 }
