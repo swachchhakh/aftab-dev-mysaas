@@ -7,8 +7,7 @@
   },
   "scripts": {
     "dev": "vite dev --port 3000",
-     "build": "tsc && vinxi build",
-    "start": "vinxi start",
+    "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "format": "biome format",
