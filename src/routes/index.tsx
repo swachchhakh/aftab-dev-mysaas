@@ -105,12 +105,7 @@ function Home() {
       <header className="border-b border-zinc-200 bg-white">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
           <span className="font-semibold text-zinc-900 tracking-tight">MySaaS</span>
-          <Link
-            to="/login"
-            className="flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
-          >
-            Sign in <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
+       
         </div>
       </header>
 
@@ -130,7 +125,7 @@ function Home() {
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <Link
-              to="/login"
+              to="/dashboard"
               className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
             >
               Get started <ArrowRight className="w-4 h-4" />
