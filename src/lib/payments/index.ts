@@ -29,11 +29,19 @@ export async function createOneTimeCheckoutSession(params: {
   metadata: Record<string, string>;
   customerEmail?: string;
   couponId?: string;
+  mode?: "payment" | "subscription";
 }) {
   const client = getStripe();
 
+  // Auto-detect mode if not specified by checking the price
+  let mode = params.mode;
+  if (!mode) {
+    const price = await client.prices.retrieve(params.priceId);
+    mode = price.recurring ? "subscription" : "payment";
+  }
+
   const session = await client.checkout.sessions.create({
-    mode: "payment",
+    mode,
     line_items: [{ price: params.priceId, quantity: 1 }],
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,

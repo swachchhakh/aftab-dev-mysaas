@@ -97,7 +97,7 @@ export default function PricingPage() {
             <div className="mb-6">
               <p className="text-sm font-medium text-zinc-400 mb-1">Pro</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-semibold text-white">$49</span>
+                <span className="text-4xl font-semibold text-white">$249</span>
                 <span className="text-zinc-400 text-sm">/one-time</span>
               </div>
               <p className="text-sm text-zinc-400 mt-2">Lifetime access, no subscriptions.</p>
