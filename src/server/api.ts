@@ -106,14 +106,15 @@ export const api = new Elysia({ prefix: "/api" })
     const checkoutSession = await createOneTimeCheckoutSession({
       priceId,
       successUrl: `${baseUrl}/dashboard?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${baseUrl}/pricing`,
+      cancelUrl: body?.cancelUrl ?? `${baseUrl}/pricing`, 
       metadata: { tier: "pro" },
     });
 
     return { url: checkoutSession.url };
   }, {
     body: t.Object({
-      priceId: t.Optional(t.String())
+      priceId: t.Optional(t.String()),
+      cancelUrl: t.Optional(t.String()),
     })
   }
 )

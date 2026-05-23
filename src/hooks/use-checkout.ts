@@ -10,7 +10,7 @@ export function useCheckout() {
       const res = await fetch("/api/payments/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ priceId, cancelUrl: window.location.href }),
       });
 
       if (!res.ok) throw new Error("Failed to create checkout session");

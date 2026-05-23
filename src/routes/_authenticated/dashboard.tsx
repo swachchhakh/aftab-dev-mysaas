@@ -4,23 +4,39 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { api } from "@/lib/treaty";
 import { useClaimPurchase } from "../../hooks/use-claim-purchase";
+import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeaders } from "@tanstack/react-start/server";
+import { auth } from "@/lib/auth";
+import { db, purchases } from "@/lib/db";
+import { eq } from "drizzle-orm";
+
 
 const searchSchema = z.object({
   purchase: z.string().optional(),
   session_id: z.string().optional(),
 });
 
+const getPurchaseStatus = createServerFn().handler(async () => {
+  const headers = new Headers(getRequestHeaders() as HeadersInit);
+  const session = await auth.api.getSession({ headers });
+
+  if (!session) return { purchase: null };
+
+  const purchase = await db
+    .select()
+    .from(purchases)
+    .where(eq(purchases.userId, session.user.id))
+    .limit(1);
+
+  return { purchase: purchase[0] ?? null };
+});
+
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  validateSearch: searchSchema,
-  loader: async () => {
-    const baseUrl = typeof window === "undefined" 
-      ? (process.env.BETTER_AUTH_URL ?? "http://localhost:3000")
-      : "";
-    
-    const res = await fetch(`${baseUrl}/api/payments/status`);
-    const data = await res.json();
-    return { purchase: data?.purchase ?? null };
-  },
+  validateSearch: (search: Record<string, unknown>) => ({
+    purchase: search.purchase as string | undefined,
+    session_id: search.session_id as string | undefined,
+  }),
+  loader: async () => getPurchaseStatus(),
   component: DashboardPage,
 });
 
@@ -52,17 +68,13 @@ export default function DashboardPage() {
   const isPro = !!purchase && purchase.status === "completed";
   const isSuccessRedirect = purchaseParam === "success" && !!session_id;
 
-  // Claim purchase when Stripe redirects back
   useEffect(() => {
     if (isSuccessRedirect && session_id && !claimPurchase.isPending && !claimPurchase.isSuccess) {
       claimPurchase.mutate(
         { sessionId: session_id },
         {
           onSuccess: () => {
-            // Clean up URL params then reload to reflect new plan
-            navigate({ to: "/dashboard", search: {} }).then(() => {
-              window.location.reload();
-            });
+            window.location.href = "/dashboard";
           },
         }
       );
