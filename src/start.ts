@@ -4,7 +4,7 @@ import { getRequestHeaders, getRequestUrl } from "@tanstack/react-start/server";
 
 import { auth } from "@/lib/auth";
 
-const PUBLIC_ROUTES = ["/login", "/api"];
+const PUBLIC_ROUTES = ["/login", "/api", "/"];
 
 const authMiddleware = createMiddleware({ type: "request" }).server(
   async ({ next }) => {
@@ -24,7 +24,7 @@ const authMiddleware = createMiddleware({ type: "request" }).server(
 
     if (!session?.user) {
       throw redirect({
-        to: "/login",
+        to: "/",
         search: { redirect: url.pathname },
       });
     }
