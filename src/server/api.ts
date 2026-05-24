@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db, purchases, users } from "@/lib/db";
 import { purchasesRoute } from "./routes/purchases";
-import { serve } from "inngest/hono";
+import { serve } from "inngest/edge";
 import { inngest, functions } from "@/lib/jobs";
 import { cors } from "@elysiajs/cors";
 import {
