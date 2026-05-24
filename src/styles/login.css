@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.login-root {
+  min-height: 100vh;
+  background-color: #faf9f7;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 5%, rgba(99, 102, 241, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 95%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M0 0h60v60H0z' fill='none'/%3E%3Ccircle cx='30' cy='30' r='0.75' fill='%23c7c3bb' opacity='0.5'/%3E%3C/svg%3E");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 380px;
+  animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Brand */
+
+.brand {
+  margin-bottom: 2.25rem;
+  text-align: center;
+}
+
+.brand-eyebrow {
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a0998e;
+  margin-bottom: 0.5rem;
+}
+
+.brand-name {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: #1a1814;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.45rem;
+}
+
+.brand-name em {
+  font-style: italic;
+  color: #5b56e8;
+}
+
+.brand-tagline {
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: #a0998e;
+  letter-spacing: 0.04em;
+}
+
+.brand-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+}
+
+.brand-rule-line {
+  height: 1px;
+  flex: 1;
+  background: #e5e2da;
+}
+
+.brand-rule-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #c7c3bb;
+}
+
+/* Card */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e2da;
+  border-radius: 6px;
+  padding: 2rem;
+  position: relative;
+}
+
+.card-label {
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a0998e;
+  margin-bottom: 0.3rem;
+}
+
+.card-title {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #1a1814;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.card-description {
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: #a0998e;
+  margin-bottom: 1.6rem;
+  letter-spacing: 0.02em;
+}
+
+/* Button */
+
+.github-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1.25rem;
+  background: #1a1814;
+  border: 1px solid #1a1814;
+  border-radius: 4px;
+  color: #faf9f7;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.github-btn:hover {
+  background: #2e2b26;
+  border-color: #2e2b26;
+}
+
+.github-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+/* Divider */
+
+.divider {
+  height: 1px;
+  background: #f0ece6;
+  margin: 1.4rem 0;
+}
+
+/* Legal */
+
+.legal {
+  font-size: 0.6rem;
+  font-weight: 300;
+  color: #c7c3bb;
+  text-align: center;
+  line-height: 1.75;
+  letter-spacing: 0.02em;
+}
+
+.legal a {
+  color: #a0998e;
+  text-decoration: none;
+  border-bottom: 1px solid #e5e2da;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.legal a:hover {
+  color: #5b56e8;
+  border-bottom-color: #5b56e8;
+}
+
+/* Spinner */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
