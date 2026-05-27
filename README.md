@@ -1,204 +1,214 @@
-Welcome to your new TanStack Start app! 
+# Craft MySaaS
 
-# Getting Started
+A production-ready full-stack SaaS starter built with a modern, fully type-safe TypeScript stack. Covers authentication, payments, background jobs, and transactional emails — deployed to Vercel with a serverless Postgres database on Neon.
 
-To run this application:
+Live demo: [aftab-dev-mysaas.vercel.app](https://aftab-dev-mysaas.vercel.app)
+
+---
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | TanStack Start (SSR + file-based routing) |
+| API | Elysia (embedded, mounted at `/api/*`) |
+| API client | Eden Treaty (end-to-end type safety) |
+| Database | Neon (serverless PostgreSQL) |
+| ORM | Drizzle ORM |
+| Auth | Better Auth (GitHub OAuth) |
+| Payments | Stripe Checkout + Webhooks |
+| Background jobs | Inngest |
+| Email | Resend + React Email |
+| UI | shadcn/ui + Tailwind CSS |
+| Deployment | Vercel |
+
+---
+
+## Features
+
+- GitHub OAuth login with session management and protected routes
+- Stripe Checkout with one-time and subscription pricing
+- Purchase verification via Stripe webhook signature validation
+- Refund handling with automatic plan downgrade
+- Durable background jobs via Inngest with automatic retries
+- Transactional emails — purchase confirmation, refund notification, password reset
+- End-to-end TypeScript inference from DB schema to React components
+- Server-side rendering with session-aware route loaders
+
+---
+
+## Project structure
+
+```text
+src/
+  routes/
+    index.tsx                     # Landing page
+    login.tsx                     # GitHub OAuth login
+    pricing.tsx                   # Pricing page
+    _authenticated.tsx            # Sidebar layout (protected)
+    _authenticated/
+      dashboard.tsx               # Main dashboard
+      billing.tsx                 # Plan management
+      settings.tsx                # Profile settings
+  server/
+    api.ts                        # Elysia API routes
+    routes/
+      purchases.ts                # Purchase routes
+  lib/
+    auth.ts                       # Better Auth config
+    auth/client.ts                # Better Auth client
+    db.ts                         # Drizzle + Neon setup
+    payments.ts                   # Stripe helpers
+    jobs.ts                       # Inngest functions
+    email.ts                      # Resend client
+    send-email.ts                 # Email sending helpers
+    treaty.ts                     # Eden Treaty client
+  hooks/
+    use-checkout.ts
+    use-claim-purchase.ts
+    use-purchase-status.ts
+    use-update-profile.ts
+  emails/
+    purchase-confirmation.tsx
+    refund-confirmation.tsx
+    password-reset.tsx
+  config/
+    plans.ts                      # Stripe price config
+```
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- [Bun](https://bun.sh)
+- [Neon](https://neon.tech) account
+- [Stripe](https://stripe.com) account
+- [Better Auth](https://better-auth.com) secret
+- [Resend](https://resend.com) account
+- [Inngest](https://inngest.com) account
+- GitHub OAuth app
+
+### Installation
 
 ```bash
+git clone https://github.com/yourusername/my-saas.git
+cd my-saas
 bun install
-bun --bun run dev
 ```
 
-# Building For Production
+### Environment variables
 
-To build this application for production:
+Create a `.env` file in the root:
+
+```env
+# Database
+DATABASE_URL=postgres://postgres:postgres@db.localtest.me:5432/my_saas
+NEON_PROXY_URL=http://localhost:4444
+
+# Auth
+BETTER_AUTH_SECRET=your_secret_here
+BETTER_AUTH_URL=http://localhost:3000
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_PRO_PRICE_ID=price_xxx
+
+# Inngest
+INNGEST_EVENT_KEY=local
+
+# Resend
+RESEND_API_KEY=re_xxx
+RESEND_FROM_EMAIL=onboarding@resend.dev
+
+# App
+PUBLIC_URL=http://localhost:3000
+```
+
+### Database setup
 
 ```bash
-bun --bun run build
+bun db:push
 ```
 
-## Testing
+### Development
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+Run the app and Inngest dev server in separate terminals:
 
 ```bash
-bun --bun run test
+# Terminal 1 — app
+bun dev
+
+# Terminal 2 — Inngest
+npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest
 ```
 
-## Styling
+App runs at `http://localhost:3000`. Inngest dashboard at `http://localhost:8288`.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+---
 
-### Removing Tailwind CSS
+## Database schema
 
-If you prefer not to use Tailwind CSS:
+```
+users          — created by Better Auth on first login
+sessions       — managed by Better Auth
+accounts       — links users to OAuth providers
+verifications  — used for OAuth state and email verification
+purchases      — inserted after successful Stripe payment
+```
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `bun install @tailwindcss/vite tailwindcss -D`
+---
 
-## Linting & Formatting
+## Payment flow
 
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
+1. User clicks upgrade on `/pricing` or `/billing`
+2. Frontend calls `POST /api/payments/checkout` with a `priceId`
+3. Elysia creates a Stripe Checkout session and returns the hosted URL
+4. Browser redirects to Stripe — user pays
+5. Stripe redirects back to `/dashboard?purchase=success&session_id=xxx`
+6. Dashboard calls `POST /api/purchases/claim` — verifies with Stripe, inserts purchase row, fires Inngest event
+7. Inngest sends purchase confirmation email via Resend
+8. Stripe also fires a `checkout.session.completed` webhook as the reliable parallel path
 
+---
+
+## Deployment
+
+### Vercel
+
+1. Push to GitHub
+2. Import the repo in [vercel.com](https://vercel.com)
+3. Add all environment variables under **Settings → Environment Variables**
+4. Update `BETTER_AUTH_URL` and `PUBLIC_URL` to your Vercel domain
+5. Update your GitHub OAuth app callback URL to `https://your-app.vercel.app/api/auth/callback/github`
+6. Add your Stripe webhook endpoint `https://your-app.vercel.app/api/payments/webhook`
+7. Sync your Inngest app at `https://your-app.vercel.app/api/inngest`
+
+### Run migrations against production
 
 ```bash
-bun --bun run lint
-bun --bun run format
-bun --bun run check
+DATABASE_URL="your_neon_production_url" bun db:push
 ```
 
+---
 
+## Scripts
 
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
+```bash
+bun dev          # start dev server
+bun build        # production build
+bun db:push      # push schema to database
+bun db:generate  # generate migrations
+bun db:migrate   # run migrations
+bun db:studio    # open Drizzle Studio
 ```
 
-Then anywhere in your JSX you can use it like so:
+---
 
-```tsx
-<Link to="/about">About</Link>
-```
+## License
 
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+AFTAB MIRAJ SWACHCHHA
